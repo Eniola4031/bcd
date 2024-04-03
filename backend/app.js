@@ -5,7 +5,6 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var userAuthentication = require("./routes/authenticationRoutes");
-var otpRoutes = require("./routes/otpRoutes");
 var userRoutes = require("./routes/userRoutes");
 var taskRoutes = require("./routes/taskRoutes");
 var app = express();
@@ -20,7 +19,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/userauth", userAuthentication);
-app.use("/sendotp", otpRoutes);
 app.use("/user", userRoutes);
 app.use("/task", taskRoutes);
 
