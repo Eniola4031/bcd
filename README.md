@@ -1,51 +1,70 @@
-Decentralized Micro-Task Marketplace
+# Getting Started with Create React App
 
-This project is a decentralized micro-task marketplace built on Solidity and deployed on the Etherlink network. It allows users to post and complete small, quick tasks for cryptocurrency rewards.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-Features:
+## Available Scripts
 
-Task Creation and Browsing: Employers can create micro-tasks with detailed descriptions, required skills, and deadlines. Workers can browse available tasks based on categories, skills, or search functionality.
-Escrow System: Secure escrow system ensures payment is released only after successful task completion by the worker, verified by the employer.
-Reputation System (Optional): Integrates an optional reputation system where employers can rate workers to build trust and incentivize quality work.
-Low Fees and Fast Transactions: Leverages Etherlink's low fees and fast transactions for smooth user experience and efficient micro-payments.
-Technologies:
+In the project directory, you can run:
 
-Frontend: HTML, CSS, JavaScript (ReactJS, AngularJS, VueJS etc.)
-Backend: Python (Django, Flask) or Node.js (Express) (optional)
-Smart Contracts: Solidity
-Getting Started:
+### `npm start`
 
-Clone this repository.
-Install dependencies (refer to backend documentation if applicable).
-Follow configuration instructions for Etherlink network connection (testnet recommended for development).
-Run the application (refer to specific backend framework documentation if applicable).
-Solidity Contract Functions:
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-Refer to contracts/MicroTask.sol for detailed comments on each function.
-Project Structure:
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-.
-├── README.md (this file)
-├── contracts/
-│   └── MicroTask.sol (Solidity smart contract)
-├── frontend/  (Frontend application code)
-│   └── ...
-├── backend/  (Optional backend server code)
-│   └── ...
-└── tests/  (Solidity unit tests)
-    └── ...
-Deployment:
+### `npm test`
 
-Compile and deploy the MicroTask.sol smart contract to the Etherlink network (testnet recommended).
-Update frontend configuration with the deployed contract address.
-Contributing:
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-We welcome contributions to this project! Please create pull requests with clear descriptions of your changes.
+### `npm run build`
 
-License:
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-This project is licensed under the MIT License (see LICENSE.md for details).
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-Disclaimer
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-This project is for educational purposes only. Use it at your own risk. The authors are not responsible for any loss or damage caused by its use.
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
