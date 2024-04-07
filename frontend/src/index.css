@@ -20,7 +20,7 @@ header {
   border-bottom: 1px solid #dddddd;
   position: sticky;
   top: 0;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 .container {
   padding: 20px;
@@ -56,7 +56,7 @@ nav .nav-links {
   font-weight: 500;
 }
 .nav-links a {
-  color: #8E989C;
+  color: #8e989c;
   line-height: 24px;
 }
 .nav-links a:hover {
@@ -121,7 +121,6 @@ nav .nav-links {
   gap: 32px;
 }
 .featured-tasks-cont > h2,
-.how-it-works > h2,
 .why-choose-us > h2,
 .call-to-action > h2 {
   font-size: 2.1rem;
@@ -136,7 +135,8 @@ nav .nav-links {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  justify-content: space-between;
+  gap: 32px;
   align-items: flex-start;
   border-radius: 10px;
   border: 2px solid #03005c1a;
@@ -152,15 +152,33 @@ nav .nav-links {
   font-weight: 800;
   color: #333333;
 }
+.title-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
 .task-description {
-  color: #8E989C;
+  color: #8e989c;
   font-weight: 500;
 }
-.task-card >div {
+.task-card > .pay-btn {
   display: flex;
   justify-content: space-between;
   width: 100%;
   align-items: center;
+  /* margin-top: auto; */
+}
+.task-card .skills {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.skills li {
+  background-color: #f5f7f7;
+  padding: 16px;
+  border-radius: 10px;
 }
 .task-payment {
   color: #0fa38d;
@@ -202,20 +220,83 @@ nav .nav-links {
 }
 .step-info p {
   font-size: 16px;
-  color: #8E989C;
+  color: #8e989c;
 }
 .step:hover {
-  border:2px solid #007bff;
+  border: 2px solid #007bff;
 }
 .step:hover h3 {
   color: #007bff;
 }
-.how-it-works i {
-  border: 1px solid #d3d3d3;
+.faq-container {
+  display: flex;
+  padding: 40px 20px;
+  flex-direction: column;
+  gap: 32px;
+  box-shadow: #03005c1a 0px 1px 4px;
+  border: 2px solid #03005c1a;
+  background-color: #ffffff;
+  margin: 40px auto;
+}
+.faq {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 2.1rem;
+  align-self: center;
+}
+.faq i {
   padding: 15px;
   border-radius: 10px;
   color: #0fa38d;
+}
+.faq-list.col {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.faq-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: #03005c1a 0px 1px 4px;
+  border: 2px solid #03005c1a;
+  padding: 20px;
+  border-radius: 10px;
+}
+.faq-item:hover {
+  border: 2px solid #007bff;
+  cursor: pointer;
+}
+.faq-item:hover h3 {
+  color: #007bff;
+}
+.faq-item .fa-plus {
+  background-color: #007bff;
+  padding: 8px;
+  border-radius: 50%;
+  color: #ffffff;
+}
+.faq-item .fa-minus {
+  background-color: #333333;
+  padding: 8px;
+  border-radius: 50%;
+  color: #ffffff;
+}
+.faq-item h3 {
   font-size: 1.25rem;
+}
+.faq-item .faq-quest-ans {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.faq-quest-ans .ans {
+  color: #8e989c;
+  display: none;
+}
+.ans.show {
+  display: block;
 }
 .reason {
   padding: 20px;
@@ -333,4 +414,49 @@ footer .brand p {
 }
 button {
   background-color: #d2e0ff;
+}
+
+/* Explore page */
+.explore-container {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.explore-container .latest-top,
+.explore-container .all-top {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  font-size: 1.25rem;
+}
+.explore-container .latest-top h3,
+.explore-container .all-top h3 {
+  background-color: #d2e0ff;
+  padding: 8px 12px;
+  color: #007bff;
+  font-weight: 500;
+  /* border: 1px solid #007bff; */
+  border-radius: 8px;
+}
+.explore-container .latest-top > div,
+.explore-container .all-top > div {
+  height: 1px;
+  /* background-color: #8e989c; */
+  flex: 1;
+}
+/* Task details */
+.task-details {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.task-details article {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.task-details article h2 {
+  text-align: center;
 }

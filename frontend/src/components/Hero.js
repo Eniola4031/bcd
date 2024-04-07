@@ -16,7 +16,7 @@ const Hero = () => {
         <Link href='/' className='btn cta-button connect'>
           Create New Task
         </Link>
-        <Link href='/' className='btn explore'>
+        <Link to='/explore' className='btn explore'>
           Browse Tasks
         </Link>
       </div>
