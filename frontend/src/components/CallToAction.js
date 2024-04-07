@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const CallToAction = () => {
   return (
     <div className='c-t-a container'>
@@ -8,7 +10,9 @@ const CallToAction = () => {
             Join our decentralized micro-task marketplace today and earn
             cryptocurrency by completing quick tasks!
           </p>
-          <button className='btn'>Connect Now</button>
+          <Link to='/connect' className='btn'>
+            Connect Now
+          </Link>
         </div>
       </section>
     </div>

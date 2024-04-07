@@ -427,7 +427,8 @@ button {
   display: flex;
   align-items: flex-end;
   gap: 16px;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  padding: 0 20px;
 }
 .explore-container .latest-top h3,
 .explore-container .all-top h3 {
@@ -459,4 +460,56 @@ button {
 }
 .task-details article h2 {
   text-align: center;
+}
+/* FOrms */
+.forms {
+  display: flex;
+  flex-direction: column;
+  margin: 50px auto;
+  gap: 32px;
+  max-width: 28rem;
+}
+.forms h1, .forms h2 {
+  align-self: center;
+}
+.forms .connect-acc {
+  box-shadow: #03005c1a 0px 1px 1px;
+  border: 1px solid #03005c1a;
+  background-color: #ffffff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+label{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.forms input {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid #8e989c;
+  outline: none;
+}
+.forms input:focus {
+  border: 1px solid #007bff;
+
+}
+.meta-mask {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+.meta-mask p {
+  color: #007bff;
+}
+.meta-mask:hover p{
+  color: #ffffff;
 }

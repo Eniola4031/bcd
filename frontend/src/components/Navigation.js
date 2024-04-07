@@ -8,8 +8,8 @@ const Navbar = () => {
                 <ul className="nav-links">
                     <li className="active"><Link to="/">Home</Link></li>
                     <li><Link to="/about">About</Link></li>
-                    <li><Link to="/contact">How it Works</Link></li>
                     <li><Link to="/explore">Explore</Link></li>
+                    {/* <li><Link to="/contact">How it Works</Link></li> */}
                 </ul>
                 <div>
                     <Link to="/connect" className="btn connect">Connect</Link>

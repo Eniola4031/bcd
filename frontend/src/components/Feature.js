@@ -12,7 +12,7 @@ const Feature = () => {
         {error && <div style={{color: 'red', textAlign: "center", fontSize: '18px'}}>{error}</div>}
         {tasks && <Tasks tasks={tasks} endIndex={6} />}
       </div>
-      <Link to='/explore' className='btn more'>
+      <Link to="/explore" className='btn more'>
         Explore More
       </Link>
     </div>
