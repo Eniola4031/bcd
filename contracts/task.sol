@@ -1,7 +1,3 @@
-//SPDX-License-Identifier: UNLICENSED
-
-// Solidity files have to start with this pragma.
-// It will be used by the Solidity compiler to validate its version.
 pragma solidity ^0.8.0;
 
 // Define a token interface (replace with your specific token contract address)
@@ -33,6 +29,9 @@ contract MicroTask {
   // Token address for platform token (if applicable)
   address public tokenAddress;
 
+  // Mapping to store user reputation scores (can be extended for different categories)
+  mapping(address => uint) public reputation;
+
   // Function to create a new micro-task
   function createTask(string memory _description, string memory _skillsRequired, uint _deadline, uint _reward, address _tokenAddress) public payable {
     require(_deadline > block.timestamp, "Deadline must be in the future");
@@ -55,8 +54,8 @@ contract MicroTask {
     task.worker = msg.sender;
   }
 
-  // Function to allow employers to mark a task as completed and release payment
-  function completeTask(uint _taskId) public {
+  // Function to allow employers to mark a task as completed and release payment, also update worker reputation
+  function completeTask(uint _taskId, uint _rating) public {
     Task storage task = tasks[_taskId];
     require(task.employer == msg.sender, "Only employer can complete their task");
     require(!task.completed, "Task already completed");
@@ -69,6 +68,9 @@ contract MicroTask {
     } else {
       task.worker.transfer(task.reward); // Transfer Wei if no token used
     }
+
+    // Update worker reputation based on rating (adjust logic as needed)
+    reputation[task.worker] += _rating; // Simple example, consider weighted ratings
   }
 
   // Function to retrieve details of a specific task
@@ -76,7 +78,9 @@ contract MicroTask {
     return tasks[_taskId];
   }
 
-  // Optional reputation scoring system (implement logic for storing and updating reputation scores)
-  // ... (function to rate worker, access and update reputation score)
+  // Function to get a user's reputation score
+  function getReputation(address _user) public view returns (uint) {
+    return reputation[_user];
+  }
 
 }
