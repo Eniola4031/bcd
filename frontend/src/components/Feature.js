@@ -3,6 +3,7 @@ import Tasks from "./Tasks";
 import useFetch from "../hooks/useFetch";
 
 const Feature = () => {
+
   const { tasks, isPending, error } = useFetch("http://localhost:8000/tasks");
   return (
     <div className='featured-tasks-cont container'>

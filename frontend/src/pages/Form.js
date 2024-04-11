@@ -2,7 +2,7 @@ const Form = () => {
   return (
     <div className='forms container'>
       <h1 className='logo'>
-        B<span>CD</span>
+        B<span>C</span>D
       </h1>
       <h2>Sign in to your Account</h2>
       <div className="connect-acc">
@@ -19,7 +19,7 @@ const Form = () => {
               Log in
             </button>
           </form>
-          <p style={{textAlign:"center", borderBottom: "1px solid #8e989c", paddingBottom:"20px"}}>OR</p>
+          <p style={{textAlign:"center", borderBottom: "1px solid #40a9ff", paddingBottom:"20px"}}>OR</p>
           <div className='wallets'>
             <div className="meta-mask btn">
                 <p>Connect with Metamask</p>

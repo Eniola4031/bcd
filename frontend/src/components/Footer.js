@@ -4,7 +4,7 @@ const Footer = () => {
       <div className='foot container row'>
         <div className='brand'>
           <h1 className='logo'>
-            B<span>CD</span>
+            B<span>C</span>D
           </h1>
           <p>
             Revolutionizing Task Completion with Decentralization and Direct

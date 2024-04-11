@@ -13,7 +13,7 @@ const Hero = () => {
         today!
       </p>
       <div className='hero-actions'>
-        <Link href='/' className='btn cta-button connect'>
+        <Link to='/create' className='btn cta-button connect'>
           Create New Task
         </Link>
         <Link to='/explore' className='btn explore'>
