@@ -1,170 +1,82 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
-
-// Define a token interface (replace with your specific token contract address)
-interface Token {
-  function transferFrom(address from, address to, uint amount) external;
-  function balanceOf(address account) external view returns (uint);
-}
-
-contract MicroTask {
-
-  // Struct to store details of a micro-task
-  struct Task {
-    uint id;
-    address payable employer;
-    string description;
-    string skillsRequired;
-    uint deadline; // Unix timestamp
-    uint reward; // Amount in Wei (or token amount)
-    bool completed;
-    address payable worker; // Worker who accepted the task
-  }
-
-  // Mapping to store tasks with their unique IDs
-  mapping(uint => Task) public tasks;
-
-  // Counter for assigning unique IDs to tasks
-  uint public taskCount;
-
-  // Token address for platform token (if applicable)
-  address public tokenAddress;
-
-  // Mapping to store user reputation scores (can be extended for different categories)
-  mapping(address => uint) public reputation;
-
-  // Function to create a new micro-task
-  function createTask(string memory _description, string memory _skillsRequired, uint _deadline, uint _reward, address _tokenAddress) public payable {
-    require(_deadline > block.timestamp, "Deadline must be in the future");
-    if (_tokenAddress != address(0)) { // Check if token address is provided
-      require(Token(_tokenAddress).balanceOf(msg.sender) >= _reward, "Insufficient token balance");
-    } else {
-      require(msg.value >= _reward, "Insufficient funds provided for reward");
-    }
-
-    tasks[taskCount] = Task(taskCount, msg.sender, _description, _skillsRequired, _deadline, _reward, false, address(0));
-    taskCount++;
-    tokenAddress = _tokenAddress; // Store token address if provided
-  }
-
-  // Function to allow workers to accept a task
-  function acceptTask(uint _taskId) public {
-    Task storage task = tasks[_taskId];
-    require(!task.completed, "Task already completed");
-    require(task.employer != msg.sender, "Employer cannot accept their own task");
-    task.worker = msg.sender;
-  }
-
-  // Function to allow employers to mark a task as completed and release payment, also update worker reputation
-  function completeTask(uint _taskId, uint _rating) public {
-    Task storage task = tasks[_taskId];
-    require(task.employer == msg.sender, "Only employer can complete their task");
-    require(!task.completed, "Task already completed");
-    require(block.timestamp > task.deadline, "Task deadline not reached yet");
-    require(task.worker != address(0), "No worker has accepted the task");
-
-    task.completed = true;
-    if (tokenAddress != address(0)) { // Transfer tokens if using token system
-      Token(tokenAddress).transferFrom(msg.sender, task.worker, task.reward);
-    } else {
-      task.worker.transfer(task.reward); // Transfer Wei if no token used
-    }
-
-    // Update worker reputation based on rating (adjust logic as needed)
-    reputation[task.worker] += _rating; // Simple example, consider weighted ratings
-  }
-
-  // Function to retrieve details of a specific task
-  function getTask(uint _taskId) public view returns (Task memory) {
-    return tasks[_taskId];
-  }
-
-  // Function to get a user's reputation score
-  function getReputation(address _user) public view returns (uint) {
-    return reputation[_user];
-  }
-
-}
 pragma solidity ^0.8.0;
 
-// Import ERC20 interface from OpenZeppelin
+// Import ERC20 token standard
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract MicroTask {
-
-  // Struct to store details of a micro-task
-  struct Task {
-    uint id;
-    address payable employer;
-    string description;
-    string skillsRequired;
-    uint deadline; // Unix timestamp
-    uint reward; // Amount in Wei (or token amount)
-    bool completed;
-    address payable worker; // Worker who accepted the task
-  }
-
-  // Mapping to store tasks with their unique IDs
-  mapping(uint => Task) public tasks;
-
-  // Counter for assigning unique IDs to tasks
-  uint public taskCount;
-
-  // Token address for platform token (if applicable)
-  address public tokenAddress;
-
-  // Mapping to store user reputation scores (can be extended for different categories)
-  mapping(address => uint) public reputation;
-
-  // Function to create a new micro-task
-  function createTask(string memory _description, string memory _skillsRequired, uint _deadline, uint _reward, address _tokenAddress) public payable {
-    require(_deadline > block.timestamp, "Deadline must be in the future");
-    if (_tokenAddress != address(0)) { // Check if token address is provided
-      require(IERC20(_tokenAddress).balanceOf(msg.sender) >= _reward, "Insufficient token balance");
-    } else {
-      require(msg.value >= _reward, "Insufficient funds provided for reward");
+contract MicrotaskMarketplace {
+    // Structure to represent a microtask
+    struct Task {
+        uint256 id;
+        address payable employer;
+        address payable freelancer;
+        string description;
+        uint256 reward; // ERC20 token
+        address acceptedToken; // Address of ERC20 token accepted 
+        bool completed;
     }
 
-    tasks[taskCount] = Task(taskCount, msg.sender, _description, _skillsRequired, _deadline, _reward, false, address(0));
-    taskCount++;
-    tokenAddress = _tokenAddress; // Store token address if provided
-  }
+    // Mapping of task id to Task struct
+    mapping(uint256 => Task) public tasks;
 
-  // Function to allow workers to accept a task
-  function acceptTask(uint _taskId) public {
-    Task storage task = tasks[_taskId];
-    require(!task.completed, "Task already completed");
-    require(task.employer != msg.sender, "Employer cannot accept their own task");
-    task.worker = msg.sender;
-  }
+    // Event to notify of a new task being created
+    event TaskCreated(uint256 taskId, address employer, string description, uint256 reward, address acceptedToken);
 
-  // Function to allow employers to mark a task as completed and release payment, also update worker reputation
-  function completeTask(uint _taskId, uint _rating) public {
-    Task storage task = tasks[_taskId];
-    require(task.employer == msg.sender, "Only employer can complete their task");
-    require(!task.completed, "Task already completed");
-    require(block.timestamp > task.deadline, "Task deadline not reached yet");
-    require(task.worker != address(0), "No worker has accepted the task");
+    // Event to notify of a task being marked completed
+    event TaskCompleted(uint256 taskId, address freelancer);
 
-    task.completed = true;
-    if (tokenAddress != address(0)) { // Transfer tokens if using token system
-      IERC20(tokenAddress).transferFrom(msg.sender, task.worker, task.reward);
-    } else {
-      task.worker.transfer(task.reward); // Transfer Wei if no token used
+    // Modifier to restrict functions to registered employers (simple example, not production-ready)
+    modifier onlyEmployer() {
+        require(msg.sender != address(0), "Only registered employer can call this function");
+        _;
     }
 
-    // Update worker reputation based on rating (adjust logic as needed)
-    reputation[task.worker] += _rating; // Simple example, consider weighted ratings
-  }
+    // Function to create a new microtask
+    function createTask(
+        string memory _description,
+        uint256 _reward,
+        address _acceptedToken // Address of ERC20 token or 0 for Etherlink
+    ) public payable onlyEmployer {
+        // Ensure employer has deposited enough funds (Etherlink or ERC20)
+        if (_acceptedToken == address(0)) {
+            require(msg.value >= _reward, "Insufficient Etherlink deposited");
+        } else {
+            IERC20 token = IERC20(_acceptedToken);
+            require(token.transferFrom(msg.sender, address(this), _reward), "Failed to transfer ERC20 token");
+        }
 
-  // Function to retrieve details of a specific task
-  function getTask(uint _taskId) public view returns (Task memory) {
-    return tasks[_taskId];
-  }
+        uint256 taskId = tasks.length + 1; // Generate unique task ID
+        tasks[taskId] = Task(taskId, payable(msg.sender), payable(address(0)), _description, _reward, _acceptedToken, false);
+        emit TaskCreated(taskId, msg.sender, _description, _reward, _acceptedToken);
+    }
 
-  // Function to get a user's reputation score
-  function getReputation(address _user) public view returns (uint) {
-    return reputation[_user];
-  }
+    // Function for freelancer to accept a task
+    function acceptTask(uint256 _taskId) public {
+        Task storage task = tasks[_taskId];
+        require(!task.completed, "Task is already completed");
+        require(task.freelancer == address(0), "Task is already assigned");
+        task.freelancer = payable(msg.sender);
+    }
 
+    // Function for freelancer to mark a task as completed
+    function completeTask(uint256 _taskId) public {
+        Task storage task = tasks[_taskId];
+        require(task.freelancer == msg.sender, "Only assigned freelancer can mark task complete");
+        require(!task.completed, "Task is already completed");
+        task.completed = true;
+        emit TaskCompleted(_taskId, msg.sender);
+    }
+
+    // Function for employer to release payment upon successful completion
+    function releasePayment(uint256 _taskId) public onlyEmployer {
+        Task storage task = tasks[_taskId];
+        require(task.completed, "Task is not yet completed");
+
+        if (task.acceptedToken == address(0)) {
+            task.freelancer.transfer(task.reward);
+        } else {
+            IERC20 token = IERC20(task.acceptedToken);
+            token.transfer(task.freelancer, task.reward);
+        }
+    }
 }
