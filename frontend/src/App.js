@@ -6,8 +6,14 @@ import Form from "./pages/Form";
 import Footer from "./components/Footer";
 import Create from "./pages/Create";
 import TaskPage from "./pages/TaskPage";
+import data from "./data/db.json";
 
 function App() {
+  if (!localStorage.getItem("tasks")) {
+    localStorage.clear();
+    localStorage.setItem("tasks", JSON.stringify(data.tasks));
+  }
+
   return (
     <Router>
       <div className="App">

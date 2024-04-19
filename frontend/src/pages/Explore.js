@@ -3,7 +3,7 @@ import Tasks from "../components/Tasks";
 import useFetch from "../hooks/useFetch";
 
 const Explore = () => {
-  const { tasks, isPending, error } = useFetch("http://localhost:8000/tasks");
+  const { tasks } = useFetch();
   const [endIndex, setEndIndex] = useState(6);
   const latest = [];
 
@@ -25,16 +25,10 @@ const Explore = () => {
           <div></div>
         </div>
         <div className='row'>
-          {isPending && (
+          {!tasks && (
             <div
               style={{ color: "green", textAlign: "center", fontSize: "18px" }}>
               Loading ...
-            </div>
-          )}
-          {error && (
-            <div
-              style={{ color: "red", textAlign: "center", fontSize: "18px" }}>
-              {error}
             </div>
           )}
           {tasks && <Tasks tasks={getLatestTAsks()} endIndex={3} />}
@@ -46,19 +40,13 @@ const Explore = () => {
           <div></div>
         </div>
         <div className='row'>
-          {isPending && (
+          {!tasks && (
             <div
               style={{ color: "green", textAlign: "center", fontSize: "18px" }}>
               Loading ...
             </div>
           )}
-          {error && (
-            <div
-              style={{ color: "red", textAlign: "center", fontSize: "18px" }}>
-              {error}
-            </div>
-          )}
-          {tasks && <Tasks tasks={tasks} endIndex={endIndex} />}
+          {tasks && <Tasks tasks={getLatestTAsks()} endIndex={endIndex} />}
         </div>
       </div>
       <button

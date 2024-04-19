@@ -1,27 +1,44 @@
 import { useState } from "react";
-import {useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom';
+import useFetch from "../hooks/useFetch";
 
 const Create = () => {
-  const [title, setTitle] = useState('')
-  const [skills, setSkills] = useState([])
-  const [description, setDescription] = useState('')
-  const [reward, setReward] = useState(1)
-  const [isPending, setIsPending] = useState(false)
-  const history = useHistory()
+  const [title, setTitle] = useState('');
+  const [skills, setSkills] = useState('');
+  const [description, setDescription] = useState('');
+  const { tasks } = useFetch();
+  const [reward, setReward] = useState(1);
+  const [isPending, setIsPending] = useState(false);
+  const history = useHistory();
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    const sortedSkills = skills.split(',')
-    const task = {employer: 'New Employer', title, description, skills:sortedSkills, deadline:"", reward, isCompleted: false, worker: null, status: null}
-    fetch('http://localhost:8000/tasks', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(task)
-    }).then(() => {
-      setIsPending(true)
-      history.push('/')
-    })
-  }
+    e.preventDefault();
+
+    const sortedSkills = skills.split(',');
+    const id = (tasks.length + 1).toString()
+    const task = {
+      employer: 'New Employer',
+      title,
+      description,
+      skills: sortedSkills,
+      deadline: "",
+      reward,
+      isCompleted: false,
+      worker: null,
+      id
+    };
+
+    // Update localStorage
+    const updatedTasks = [...tasks, task];
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+
+    setIsPending(true);
+    setTimeout(() => {
+      setIsPending(false);
+      history.push('/');
+    }, 1000);
+  };
+
   return (
     <div className="create container">
       <h2>Create a new Task</h2>
@@ -46,7 +63,7 @@ const Create = () => {
               name="skills"
               id="skills"
               value={skills}
-              placeholder="Enter list of skills seperated by comma (JAVA, Android, Phython)"
+              placeholder="Enter list of skills separated by comma (e.g., Java, Android, Python)"
               required
               onChange={(e) => setSkills(e.target.value)}
             />
@@ -58,7 +75,7 @@ const Create = () => {
               name="reward"
               id="reward"
               value={reward}
-              placeholder="Enter the reward you want to give for this task)"
+              placeholder="Enter the reward you want to give for this task"
               min={1}
               required
               onChange={(e) => setReward(e.target.value)}
@@ -77,19 +94,11 @@ const Create = () => {
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </label>
-          <div
-            className="create-cancel"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <button type="submit" className="btn">
-              Cancel
+          <div className="create-cancel">
+            <button type="button" className="btn" onClick={() => history.push('/')}>Cancel</button>
+            <button type="submit" className="cta-button btn" disabled={isPending}>
+              {isPending ? 'Creating...' : 'Create'}
             </button>
-            {isPending && <button type="submit" className="cta-button btn">Creating...</button>}
-            {!isPending && <button type="submit" className="cta-button btn">Create</button>}
           </div>
         </form>
       </div>

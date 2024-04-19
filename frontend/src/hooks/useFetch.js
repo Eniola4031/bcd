@@ -1,32 +1,22 @@
 import { useEffect, useState } from "react";
+import { data } from "../data/db.json";
 
-const useFetch = (url) => {
-  const [tasks, setTasks] = useState(null);
-  const [isPending, setIsPending] = useState(true);
-  const [error, setError] = useState(null);
-
+const useFetch = () => {
+  const [tasks, setTasks] = useState([]);
   useEffect(() => {
     setTimeout(() => {
-      fetch(url, { mode: "cors" })
-        .then((res) => {
-          if (!res.ok) {
-            throw Error("resources cannot be fetched");
-          }
-          return res.json();
-        })
-        .then((result) => {
-          setIsPending(false);
-          setTasks(result);
-          setError(null)
-        })
-        .catch((err) => {
-          setError(err.message);
-          setIsPending(false)
-        });
-    }, 1000);
-  }, [url]);
+      const fetchData = () => {
+        const storedTasks = JSON.parse(localStorage.getItem("tasks"));
+        if (storedTasks) {
+          setTasks(storedTasks);
+        }
+      };
 
-  return { tasks, isPending, error };
+      fetchData();
+    }, 1000);
+  }, []);
+
+  return { tasks };
 };
 
 export default useFetch;

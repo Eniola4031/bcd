@@ -479,6 +479,12 @@ label {
 .create input:focus, textarea:focus {
   border: 1px solid #40a9ff;
 }
+.create-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 32px;
+}
 
 /* FOrms */
 .forms {
