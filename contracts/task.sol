@@ -1,82 +1,84 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
-// Import ERC20 token standard
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./EtherlinkToken.sol";
 
-contract MicrotaskMarketplace {
-    // Structure to represent a microtask
+contract Microtask {
     struct Task {
         uint256 id;
-        address payable employer;
-        address payable freelancer;
         string description;
-        uint256 reward; // ERC20 token
-        address acceptedToken; // Address of ERC20 token accepted 
+        uint256 reward;
+        string skillRequired;
+        address employer;
+        address freelancer;
+        uint256 deadline;
         bool completed;
     }
 
-    // Mapping of task id to Task struct
     mapping(uint256 => Task) public tasks;
+    uint256 public nextTaskId;
 
-    // Event to notify of a new task being created
-    event TaskCreated(uint256 taskId, address employer, string description, uint256 reward, address acceptedToken);
+    address public etherlinkTokenAddress;
+    uint256 public depositAmount = 0.1 ether;
 
-    // Event to notify of a task being marked completed
-    event TaskCompleted(uint256 taskId, address freelancer);
+    event TaskCreated(uint256 id, string description, uint256 reward, string skillRequired, address indexed employer);
+    event TaskAccepted(uint256 id, address indexed freelancer);
+    event PaymentReleased(uint256 id, address indexed freelancer, uint256 amount);
+    event TaskCompleted(uint256 id, address indexed freelancer);
 
-    // Modifier to restrict functions to registered employers (simple example, not production-ready)
-    modifier onlyEmployer() {
-        require(msg.sender != address(0), "Only registered employer can call this function");
+    constructor(address _etherlinkTokenAddress) {
+        etherlinkTokenAddress = _etherlinkTokenAddress;
+    }
+
+    modifier onlyEmployer(uint256 _taskId) {
+        require(msg.sender == tasks[_taskId].employer, "Only employer can perform this action");
         _;
     }
 
-    // Function to create a new microtask
-    function createTask(
-        string memory _description,
-        uint256 _reward,
-        address _acceptedToken // Address of ERC20 token or 0 for Etherlink
-    ) public payable onlyEmployer {
-        // Ensure employer has deposited enough funds (Etherlink or ERC20)
-        if (_acceptedToken == address(0)) {
-            require(msg.value >= _reward, "Insufficient Etherlink deposited");
-        } else {
-            IERC20 token = IERC20(_acceptedToken);
-            require(token.transferFrom(msg.sender, address(this), _reward), "Failed to transfer ERC20 token");
-        }
-
-        uint256 taskId = tasks.length + 1; // Generate unique task ID
-        tasks[taskId] = Task(taskId, payable(msg.sender), payable(address(0)), _description, _reward, _acceptedToken, false);
-        emit TaskCreated(taskId, msg.sender, _description, _reward, _acceptedToken);
+    modifier onlyFreelancer(uint256 _taskId) {
+        require(msg.sender == tasks[_taskId].freelancer, "Only freelancer can perform this action");
+        _;
     }
 
-    // Function for freelancer to accept a task
-    function acceptTask(uint256 _taskId) public {
-        Task storage task = tasks[_taskId];
-        require(!task.completed, "Task is already completed");
-        require(task.freelancer == address(0), "Task is already assigned");
-        task.freelancer = payable(msg.sender);
+    function createTask(string memory _description, uint256 _reward, string memory _skillRequired, uint256 _deadline) external payable {
+        require(msg.value >= depositAmount, "Insufficient deposit");
+        
+        uint256 taskId = nextTaskId++;
+        tasks[taskId] = Task({
+            id: taskId,
+            description: _description,
+            reward: _reward,
+            skillRequired: _skillRequired,
+            employer: msg.sender,
+            freelancer: address(0),
+            deadline: block.timestamp + _deadline,
+            completed: false
+        });
+        
+        emit TaskCreated(taskId, _description, _reward, _skillRequired, msg.sender);
     }
 
-    // Function for freelancer to mark a task as completed
-    function completeTask(uint256 _taskId) public {
+    function acceptTask(uint256 _taskId) external {
         Task storage task = tasks[_taskId];
-        require(task.freelancer == msg.sender, "Only assigned freelancer can mark task complete");
-        require(!task.completed, "Task is already completed");
+        require(task.freelancer == address(0), "Task already accepted");
+        task.freelancer = msg.sender;
+        emit TaskAccepted(_taskId, msg.sender);
+    }
+
+    function releasePayment(uint256 _taskId) external onlyEmployer(_taskId) {
+        Task storage task = tasks[_taskId];
+        require(task.completed, "Task not completed");
+        require(block.timestamp > task.deadline, "Deadline not reached");
+
+        uint256 amount = task.reward;
+        payable(task.freelancer).transfer(amount);
+        emit PaymentReleased(_taskId, task.freelancer, amount);
+    }
+
+    function completeTask(uint256 _taskId) external onlyFreelancer(_taskId) {
+        Task storage task = tasks[_taskId];
+        require(!task.completed, "Task already completed");
         task.completed = true;
         emit TaskCompleted(_taskId, msg.sender);
-    }
-
-    // Function for employer to release payment upon successful completion
-    function releasePayment(uint256 _taskId) public onlyEmployer {
-        Task storage task = tasks[_taskId];
-        require(task.completed, "Task is not yet completed");
-
-        if (task.acceptedToken == address(0)) {
-            task.freelancer.transfer(task.reward);
-        } else {
-            IERC20 token = IERC20(task.acceptedToken);
-            token.transfer(task.freelancer, task.reward);
-        }
     }
 }

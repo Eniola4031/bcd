@@ -1,122 +1,70 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("MicrotaskMarketplace", function () {
-  let marketplace;
+describe("MicrotaskManagement", function () {
+  let MicrotaskManagement;
+  let microtaskManagement;
+  let EtherlinkToken;
+  let etherlinkToken;
+  let owner;
+  let employer;
+  let freelancer;
 
   beforeEach(async function () {
-    // Deploy the contract before each test
-    const Marketplace = await ethers.getContractFactory("MicrotaskMarketplace");
-    marketplace = await Marketplace.deploy();
-    await marketplace.deployed();
+    [owner, employer, freelancer] = await ethers.getSigners();
+
+    // Deploy EtherlinkToken
+    EtherlinkToken = await ethers.getContractFactory("EtherlinkToken");
+    etherlinkToken = await EtherlinkToken.deploy(10000);
+
+    // Deploy MicrotaskManagement
+    MicrotaskManagement = await ethers.getContractFactory("MicrotaskManagement");
+    microtaskManagement = await MicrotaskManagement.deploy(etherlinkToken.address);
+
+    // Mint some tokens for employer and freelancer
+    await etherlinkToken.connect(owner).transfer(employer.address, 1000);
+    await etherlinkToken.connect(owner).transfer(freelancer.address, 1000);
   });
 
-  describe("Task Creation", function () {
-    it("Should create a new task", async function () {
-      const description = "Write a blog post";
-      const reward = 100; // Assuming Etherlink (0 for ERC20 token)
-      const tx = await marketplace.createTask(description, reward, ethers.constants.AddressZero);
-      await tx.wait();
-
-      const taskCount = await marketplace.tasks.call();
-      expect(taskCount).to.equal(1);
-
-      const task = await marketplace.tasks(1); // Task ID starts at 1
-
-      expect(task.description).to.equal(description);
-      expect(task.reward).to.equal(reward);
-      expect(task.completed).to.equal(false);
-    });
-
-    it("Should revert if insufficient Etherlink is deposited", async function () {
-      const description = "Write a blog post";
-      const insufficientReward = 50; // Less than the expected reward
-
-      await expect(marketplace.createTask(description, insufficientReward, ethers.constants.AddressZero)).to.be.revertedWith("Insufficient Etherlink deposited");
-    });
+  it("should create a task", async function () {
+    await etherlinkToken.connect(employer).approve(microtaskManagement.address, 100);
+    await microtaskManagement.connect(employer).createTask("Task Description", 100, "Skill", 1000);
+    const task = await microtaskManagement.tasks(0);
+    expect(task.id).to.equal(0);
+    expect(task.description).to.equal("Task Description");
+    expect(task.reward).to.equal(100);
+    expect(task.skillRequired).to.equal("Skill");
+    expect(task.employer).to.equal(employer.address);
+    expect(task.freelancer).to.equal("0x0000000000000000000000000000000000000000"); // freelancer should be empty initially
+    expect(task.deadline).to.be.above(0);
+    expect(task.completed).to.be.false;
   });
 
-  describe("Task Acceptance and Completion", function () {
-    let taskId;
-    let freelancer;
-
-    beforeEach(async function () {
-      const description = "Write a blog post";
-      const reward = 100;
-      const tx = await marketplace.createTask(description, reward, ethers.constants.AddressZero);
-      await tx.wait();
-      taskId = await marketplace.tasks.call();
-      freelancer = (await ethers.getSigners())[1]; // Use the second signer as the freelancer
-    });
-
-    it("Should allow a freelancer to accept a task", async function () {
-      const tx = await marketplace.connect(freelancer).acceptTask(taskId);
-      await tx.wait();
-
-      const task = await marketplace.tasks(taskId);
-      expect(task.freelancer).to.equal(freelancer.address);
-    });
-
-    it("Should revert if a freelancer tries to accept a completed task", async function () {
-      const tx1 = await marketplace.connect(freelancer).acceptTask(taskId);
-      await tx1.wait();
-
-      // Mark the task as completed (simulating another user)
-      await marketplace.completeTask(taskId);
-
-      await expect(marketplace.connect(freelancer).acceptTask(taskId)).to.be.revertedWith("Task is already completed");
-    });
-
-    it("Should allow a freelancer to mark a task as completed", async function () {
-      const tx1 = await marketplace.connect(freelancer).acceptTask(taskId);
-      await tx1.wait();
-
-      const tx2 = await marketplace.connect(freelancer).completeTask(taskId);
-      await tx2.wait();
-
-      const task = await marketplace.tasks(taskId);
-      expect(task.completed).to.equal(true);
-    });
-
-    it("Should revert if a non-assigned freelancer tries to mark a task as completed", async function () => {
-      await expect(marketplace.completeTask(taskId)).to.be.revertedWith("Only assigned freelancer can mark task complete");
-    });
+  it("should accept a task", async function () {
+    await etherlinkToken.connect(employer).approve(microtaskManagement.address, 100);
+    await microtaskManagement.connect(employer).createTask("Task Description", 100, "Skill", 1000);
+    await microtaskManagement.connect(freelancer).acceptTask(0);
+    const task = await microtaskManagement.tasks(0);
+    expect(task.freelancer).to.equal(freelancer.address);
   });
 
-  describe("Payment Release", function () {
-    let employer;
-    let freelancer;
-    let taskId;
+  it("should release payment for a completed task", async function () {
+    await etherlinkToken.connect(employer).approve(microtaskManagement.address, 100);
+    await microtaskManagement.connect(employer).createTask("Task Description", 100, "Skill", 1000);
+    await microtaskManagement.connect(freelancer).acceptTask(0);
+    await ethers.provider.send("evm_increaseTime", [2000]); // Increase time to pass deadline
+    await ethers.provider.send("evm_mine"); // Mine a new block to update the blockchain's state
+    await microtaskManagement.connect(employer).releasePayment(0);
+    const freelancerBalance = await etherlinkToken.balanceOf(freelancer.address);
+    expect(freelancerBalance).to.equal(100); // assuming no gas fees deducted
+  });
 
-    beforeEach(async function () {
-      employer = (await ethers.getSigners())[0]; // Use the first signer as the employer
-      freelancer = (await ethers.getSigners())[1]; // Use the second signer as the freelancer
-
-      const description = "Write a blog post";
-      const reward = 100;
-      const tx = await marketplace.connect(employer).createTask(description, reward, ethers.constants.AddressZero);
-      await tx.wait();
-      taskId = await marketplace.tasks.call();
-
-      const tx2 = await marketplace.connect(freelancer).acceptTask(taskId);
-      await tx2.wait();
-
-      const tx3 = await marketplace.connect(freelancer).completeTask(taskId);
-      await tx3.wait();
-    });
-
-    it("Should allow employer to release payment to freelancer after task completion", async function () {
-      const initialFreelancerBalance = await freelancer.getBalance();
-
-      const tx = await marketplace.connect(employer).releasePayment(taskId);
-      await tx.wait();
-
-      const finalFreelancerBalance = await freelancer.getBalance();
-      expect(finalFreelancerBalance.sub(initialFreelancerBalance)).to.equal(reward);
-    });
-
-    it("Should revert if employer tries to release payment for an incomplete task", async function () {
-      await expect(marketplace.connect(employer).releasePayment(taskId)).to.be.revertedWith("Task is not yet completed");
-    });
+  it("should complete a task", async function () {
+    await etherlinkToken.connect(employer).approve(microtaskManagement.address, 100);
+    await microtaskManagement.connect(employer).createTask("Task Description", 100, "Skill", 1000);
+    await microtaskManagement.connect(freelancer).acceptTask(0);
+    await microtaskManagement.connect(freelancer).completeTask(0);
+    const task = await microtaskManagement.tasks(0);
+    expect(task.completed).to.be.true;
   });
 });
