@@ -1,6 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
-//require("@nomiclabs/hardhat-waffle");
-//require("@nomiclabs/hardhat-ethers");
+import 'dotenv/config';
+
 
 const { privateKeys } = require("./secrets.json");
 
@@ -21,13 +21,11 @@ task("accounts", "Prints the list of accounts", async () => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  defaultNetwork: "sphinx",
   networks: {
-    hardhat: {},
-    sphinx: {
-      url: "https://sphinx.shardeum.org/",
-      chainId: 8082,
-      accounts: [privateKeys],
+    etherlinkTest: {
+      url: "https://node.ghostnet.etherlink.com",
+      chainId: 128123,
+      accounts: [process.env.PRIVATE_KEY],
     },
   },
   solidity: {
