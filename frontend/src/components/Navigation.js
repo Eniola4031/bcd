@@ -1,7 +1,29 @@
+import { ConnectKitButton } from "connectkit";
+import { useState, useEffect } from "react";
+import { ethers } from "ethers";
 import { Link } from "react-router-dom";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const Navbar = () => {
+  const [userBalance, setUserBalance] = useState(null);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (window.ethereum) {
+        try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const signer = await provider.getSigner();
+          const address = await signer.getAddress();
+          const balance = await provider.getBalance(address);
+          setUserBalance(ethers.formatEther(balance));
+        } catch (error) {
+          console.error("Error fetching user balance:", error);
+        }
+      }
+    };
+
+    fetchBalance();
+  }, []);
+
   return (
     <header className="navbar-header">
       <nav className="container">
@@ -18,10 +40,10 @@ const Navbar = () => {
           <li>
             <Link to="/explore">Explore</Link>
           </li>
-          {/* <li><Link to="/contact">How it Works</Link></li> */}
         </ul>
-        <div>
-          <ConnectButton />
+        <div className="c-b">
+          <ConnectKitButton />
+          {userBalance && <p>{parseFloat(userBalance).toFixed(3)} XTZ</p>}
         </div>
       </nav>
     </header>

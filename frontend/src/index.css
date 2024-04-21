@@ -608,3 +608,14 @@ label {
   border-radius: 10px;
   text-align: center;
 }
+.c-b {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 32px;
+}
+.c-b p {
+  border: 1px solid #333333;
+  padding: 8px 12px;
+  border-radius: 8px;
+}

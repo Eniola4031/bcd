@@ -1,42 +1,41 @@
+import { ethers, formatEther, parseEther } from "ethers";
 import { useState } from "react";
-import { useHistory } from 'react-router-dom';
-import useFetch from "../hooks/useFetch";
+import {useHistory} from 'react-router-dom'
+import abi from '../abi/MicroTaskAbi.json'
 
 const Create = () => {
-  const [title, setTitle] = useState('');
-  const [skills, setSkills] = useState('');
-  const [description, setDescription] = useState('');
-  const { tasks } = useFetch();
-  const [reward, setReward] = useState(1);
-  const [isPending, setIsPending] = useState(false);
-  const history = useHistory();
+  const [title, setTitle] = useState('')
+  const [skills, setSkills] = useState([])
+  const [days, setDays] = useState([])
+  const [description, setDescription] = useState('')
+  const [reward, setReward] = useState(1)
+  const [isPending, setIsPending] = useState(false)
+  const history = useHistory()
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const contractAddress = '0xD8Cb8994307932623E0deC952C1e23be6Ded698A'
+  const depositAmount = parseEther('0.1')
+  formatEther(depositAmount)
 
-    const sortedSkills = skills.split(',');
-    const id = (tasks.length + 1).toString()
-    const task = {
-      employer: 'New Employer',
-      title,
-      description,
-      skills: sortedSkills,
-      deadline: "",
-      reward,
-      isCompleted: false,
-      worker: null,
-      id
-    };
-
-    // Update localStorage
-    const updatedTasks = [...tasks, task];
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault()
     setIsPending(true);
-    setTimeout(() => {
+
+    try {
+      // Connect to the provider
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+      const daysInSeconds = days * 24 * 60 * 60; 
+      // Call the createTask function on the contract
+      await contract.createTask(title, description, reward, skills, daysInSeconds, { value: depositAmount });
+
       setIsPending(false);
       history.push('/');
-    }, 1000);
+    } catch (error) {
+      console.error('Error creating task:', error);
+      setIsPending(false);
+    }
   };
 
   return (
@@ -63,9 +62,21 @@ const Create = () => {
               name="skills"
               id="skills"
               value={skills}
-              placeholder="Enter list of skills separated by comma (e.g., Java, Android, Python)"
+              placeholder="Enter list of skills seperated by comma (JAVA, Android, Phython)"
               required
               onChange={(e) => setSkills(e.target.value)}
+            />
+          </label>
+          <label htmlFor="days">
+            Days to complete project
+            <input
+              type="number"
+              name="days"
+              id="days"
+              value={days}
+              placeholder="How many days is required to complete this task?"
+              required
+              onChange={(e) => setDays(e.target.value)}
             />
           </label>
           <label htmlFor="reward">
@@ -75,8 +86,8 @@ const Create = () => {
               name="reward"
               id="reward"
               value={reward}
-              placeholder="Enter the reward you want to give for this task"
-              min={1}
+              placeholder="Enter the reward you want to give for this task)"
+              min={0}
               required
               onChange={(e) => setReward(e.target.value)}
             />
@@ -94,11 +105,19 @@ const Create = () => {
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </label>
-          <div className="create-cancel">
-            <button type="button" className="btn" onClick={() => history.push('/')}>Cancel</button>
-            <button type="submit" className="cta-button btn" disabled={isPending}>
-              {isPending ? 'Creating...' : 'Create'}
+          <div
+            className="create-cancel"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <button type="submit" className="btn">
+              Cancel
             </button>
+            {isPending && <button type="submit" className="cta-button btn">Creating...</button>}
+            {!isPending && <button type="submit" className="cta-button btn">Create</button>}
           </div>
         </form>
       </div>

@@ -1,22 +1,43 @@
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
-import TaskDetails from "../components/TaskDetails";
-import data from "../data/db.json";
+import TaskInfo from "../components/TaskDetails";
+import { useEffect, useState } from "react";
 const TaskPage = () => {
-  const { id } = useParams();
 
-  // const tasks = JSON.parse(localStorage.getItem('tasks'))
-  const { tasks } = useFetch();
-  const task = tasks ? tasks.find((tsk) => tsk.id === id) : null;
-  const handleAcceptTask = () => {};
+  const { id } = useParams();
+  const { tasks, error, isPending } = useFetch('getTask', id);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    async function getCurrentUser() {
+      // Check if MetaMask is installed
+      if (window.ethereum) {
+        try {
+          // Request account access
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          // Set the current user
+          setCurrentUser(accounts[0]);
+        } catch (error) {
+          console.error('Error fetching current user:', error);
+        }
+      }
+    }
+
+    getCurrentUser();
+  }, []);
   return (
     <div className="task-page container">
-      {!task && (
+      {isPending && (
         <div style={{ color: "green", textAlign: "center", fontSize: "18px" }}>
           Loading ...{" "}
         </div>
       )}
-      {task && <TaskDetails tasks={task} onAccept={handleAcceptTask} />}
+      {error && (
+        <div style={{ color: "red", textAlign: "center", fontSize: "18px" }}>
+          {error}
+        </div>
+      )}
+      {tasks && <TaskInfo task={tasks} currentUser={currentUser} />}
     </div>
   );
 };

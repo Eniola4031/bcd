@@ -3,12 +3,12 @@ import Tasks from "../components/Tasks";
 import useFetch from "../hooks/useFetch";
 
 const Explore = () => {
-  const { tasks } = useFetch();
+  const { tasks, isPending, error } = useFetch("getAllTasks");
   const [endIndex, setEndIndex] = useState(6);
   const latest = [];
 
   const getLatestTAsks = () => {
-    for (let i = tasks.length - 1; i > 0; i--) {
+    for (let i = tasks.length - 1; i >= 0; i--) {
       latest.push(tasks[i]);
     }
     return latest;
@@ -25,10 +25,16 @@ const Explore = () => {
           <div></div>
         </div>
         <div className='row'>
-          {!tasks && (
+          {isPending && (
             <div
               style={{ color: "green", textAlign: "center", fontSize: "18px" }}>
               Loading ...
+            </div>
+          )}
+          {error && (
+            <div
+              style={{ color: "red", textAlign: "center", fontSize: "18px" }}>
+              {error}
             </div>
           )}
           {tasks && <Tasks tasks={getLatestTAsks()} endIndex={3} />}
@@ -40,13 +46,19 @@ const Explore = () => {
           <div></div>
         </div>
         <div className='row'>
-          {!tasks && (
+          {isPending && (
             <div
               style={{ color: "green", textAlign: "center", fontSize: "18px" }}>
               Loading ...
             </div>
           )}
-          {tasks && <Tasks tasks={getLatestTAsks()} endIndex={endIndex} />}
+          {error && (
+            <div
+              style={{ color: "red", textAlign: "center", fontSize: "18px" }}>
+              {error}
+            </div>
+          )}
+          {tasks && <Tasks tasks={tasks} endIndex={endIndex} />}
         </div>
       </div>
       <button
