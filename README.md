@@ -4,14 +4,14 @@ This project is a decentralized micro-task marketplace built on Solidity and dep
 
 Features:
 
-Task Creation and Browsing: Employers can create micro-tasks with detailed descriptions, required skills, and deadlines. Workers can browse available tasks based on categories, skills, or search functionality.
+Task Creation: Employers can create micro-tasks with detailed descriptions, required skills, and deadlines. Workers can browse available tasks based on categories, skills, or search functionality.
 Escrow System: Secure escrow system ensures payment is released only after successful task completion by the worker, verified by the employer.
 Reputation System (Optional): Integrates an optional reputation system where employers can rate workers to build trust and incentivize quality work.
 Low Fees and Fast Transactions: Leverages Etherlink's low fees and fast transactions for smooth user experience and efficient micro-payments.
 Technologies:
 
 Frontend: HTML, CSS, JavaScript (ReactJS, AngularJS, VueJS etc.)
-Backend: Python (Django, Flask) or Node.js (Express) (optional)
+Backend: Python (Django, Flask) or Node.js
 Smart Contracts: Solidity
 Getting Started:
 
