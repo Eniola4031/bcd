@@ -1,0 +1,81 @@
+{
+  "tasks": [
+    {
+      "employer": "Mubarak D.",
+      "title": "Edit a Wedding template",
+      "description": "This is just a simple task that requires editing a wedding design template. The work must be carried out with Photoshop, My budget is $10",
+      "skills": ["Design", "Photoshop", "Creativity"],
+      "deadline": "",
+      "reward": 10,
+      "iscompleted": false,
+      "worker": null,
+      "id": "1"
+    },
+    {
+      "employer": "Felix Johnson D.O",
+      "title": "Add To-do list to an application",
+      "description": "I have a running app that needs additional features like the to-do list feature where customers can track their progress. U think it's what you can do? Link up",
+      "skills": ["App development", "JavaScript", "Kotlin"],
+      "deadline": "",
+      "reward": 75,
+      "iscompleted": false,
+      "worker": null,
+      "id": "2"
+    },
+    {
+      "employer": "Emily K.",
+      "title": "Create a Logo for a new business",
+      "description": "Looking for a creative designer to create a logo for my new business venture. Must be unique and eye-catching. Budget is $50.",
+      "skills": ["Design", "Creativity", "Illustrator"],
+      "deadline": "",
+      "reward": 50,
+      "iscompleted": false,
+      "worker": null,
+      "id": "3"
+    },
+    {
+      "employer": "John S.",
+      "title": "Develop a mobile app for fitness tracking",
+      "description": "I'm looking for a skilled app developer to create a mobile app for tracking fitness activities. Must have experience with both iOS and Android development. Budget is $150.",
+      "skills": ["App development", "iOS", "Android"],
+      "deadline": "",
+      "reward": 150,
+      "iscompleted": false,
+      "worker": null,
+      "id": "4"
+    },
+    {
+      "employer": "Sophia L.",
+      "title": "Design a brochure for a travel agency",
+      "description": "We need a professional designer to create a brochure for our travel agency. Must include captivating images and enticing content. Budget is $80.",
+      "skills": ["Design", "Photoshop", "Content writing"],
+      "deadline": "",
+      "reward": 80,
+      "iscompleted": false,
+      "worker": null,
+      "id": "5"
+    },
+    {
+      "employer": "David M.",
+      "title": "Build a website for an online store",
+      "description": "We're launching an online store and need a website developer to build the platform. Must be user-friendly and secure. Budget is $200.",
+      "skills": ["Web development", "HTML", "CSS", "JavaScript"],
+      "deadline": "",
+      "reward": 200,
+      "iscompleted": false,
+      "worker": null,
+      "id": "6"
+    },
+    {
+      "employer": "Sarah H.",
+      "title": "Translate a document from English to Spanish",
+      "description": "I have a document that needs to be translated from English to Spanish. Looking for a fluent Spanish speaker for this task. Budget is $30.",
+      "skills": ["Translation", "Spanish"],
+      "deadline": "",
+      "reward": 30,
+      "iscompleted": false,
+      "worker": null,
+      "id": "7"
+    }
+  ]
+}
